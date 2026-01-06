@@ -1,45 +1,46 @@
 # Stage 1: Build the Application
-# We use node:22 as the base for building and installing dependencies.
 FROM node:22 AS build
 
-# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json first to leverage Docker caching.
-# If these files don't change, subsequent builds can skip 'npm install'.
+# Copy package files
 COPY package*.json ./
 COPY tsconfig*.json ./
 
-# Install dependencies including TypeScript
+# Install all dependencies (including devDependencies for building)
+# Using 'npm ci' is faster and more reliable if you have a lockfile,
+# otherwise it falls back to install.
 RUN npm install
-RUN npm install --save-dev typescript @types/node
 
-# Copy the rest of the application source code
+# Copy source code
 COPY . .
 
-# Build TypeScript
-RUN npm run build || npx tsc
+# Build the TypeScript code
+RUN npm run build
 
-# Stage 2: Create the Final Production Image
-# We use node:22-slim as a minimal runtime image.
+# Stage 2: Production Runner
 FROM node:22-slim
 
-# Set the working directory
 WORKDIR /usr/src/app
 
-# Copy only production dependencies
+# Copy package.json to install production dependencies
 COPY --from=build /usr/src/app/package*.json ./
+
+# Install ONLY production dependencies to keep image small
 RUN npm install --only=production
 
-# Copy the built application files from the 'build' stage
+# Copy the built application from the 'build' stage
+# NOTE: Ensure your tsconfig outputs to 'dist'.
+# If your app crashes saying "cannot find module", check if the path below
+# matches your actual build structure (e.g. dist/index.js vs dist/src/index.js)
 COPY --from=build /usr/src/app/dist ./dist
 
-# Expose the port your app runs on
-ENV PORT=8080
-EXPOSE $PORT
+# CRITICAL FIX: Matches fly.toml internal_port = 3000
+ENV PORT=3000
+EXPOSE 3000
 
-# Run the application using the non-root user (recommended for security)
+# Use non-root user for security
 USER node
 
-# Define the command to start your application
+# Start the application
 CMD [ "node", "dist/src/index.js" ]
