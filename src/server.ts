@@ -10,7 +10,7 @@ import logRequest from "./log/index.js";
 const app = express();
 
 app.set("view engine", "ejs");
-app.set("views", join(getPath("../templates", import.meta.url)));
+app.set("views", join(getPath("templates", import.meta.url)));
 app.engine("html", ejs.renderFile);
 
 // Apply middleware
