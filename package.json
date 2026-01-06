@@ -16,7 +16,8 @@
   "scripts": {
     "dev": "tsx --watch src/index.ts",
     "start": "node dist/src/index.js",
-    "build": "tsc -p tsconfig.build.json",
+    "build:copy": "ncp src/templates dist/src/templates",
+    "build": "tsc -p tsconfig.build.json && npm run build:copy",
     "type-check": "tsc --noEmit",
     "crawler": "tsx ./parser/crawler.ts",
     "downloader": "sh parser/dns_shop_downloader.sh && npm run crawler && sh parser/dns_shop_downloader_prices.sh",
@@ -41,6 +42,7 @@
     "@tsconfig/node24": "^24.0.3",
     "@types/ejs": "^3.1.5",
     "@types/express": "^5.0.6",
+    "ncp": "^2.0.0",
     "prettier": "^3.7.4",
     "regenerator-runtime": "^0.14.1",
     "tsx": "^4.21.0",
