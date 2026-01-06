@@ -1,7 +1,6 @@
 import express from "express";
 import { writeFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import getPath from "../helpers/get_path.js";
 
 export const updateRequest = express.Router();
 
@@ -11,13 +10,13 @@ updateRequest.route("/").post((req, res) => {
     return;
   }
 
-  writeFileSync(join(getPath("../../", import.meta.url), "request.sh"), req.body.request);
+  writeFileSync(join('/tmp', "request.sh"), req.body.request);
   res.redirect("/update-request");
 });
 
 
 updateRequest.route("/").get((req, res) => {
-  const request = readFileSync(join(getPath("../../", import.meta.url), "request.sh"));
+  const request = readFileSync(join('/tmp', "request.sh"));
   res.render("update-request.html", { request });
 });
 

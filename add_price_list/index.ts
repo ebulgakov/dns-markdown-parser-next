@@ -2,7 +2,6 @@ import "dotenv/config";
 import { ObjectId } from "mongodb";
 import { dbConnect, dbDisconnect } from "#db/database.js";
 import getFile from "./helpers/get_file.js";
-import { joinPath } from "./helpers/get_dirname.js";
 import createData from "./helpers/create_data.js";
 import { savePriceList } from "#db/pricelist/mutations/save_price_list.js";
 import { deleteLastPriceList } from "#db/pricelist/mutations/delete_last_price_list.js";
@@ -11,9 +10,8 @@ import isSameDay from "./helpers/is_same_day.js";
 import getPerformance from "#helpers/get_performance.js";
 
 async function addPriceList() {
-  const path = joinPath("../pages", import.meta.url);
-  const html = getFile("body.html", path) || "";
-  const { data } = JSON.parse(getFile("prices.html", path)) || {};
+  const html = getFile("body.html", '/tmp') || "";
+  const { data } = JSON.parse(getFile("prices.html", '/tmp')) || {};
   const goods = createData(html, data);
   const city = process.env.CITY || "samara";
 
