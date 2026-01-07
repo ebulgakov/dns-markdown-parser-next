@@ -2,7 +2,7 @@ import "dotenv/config";
 import server from "./server.js";
 
 // Start the server
-const port = process.env.PORT ?? "9001";
+const port = process.env.PORT ?? "3000";
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
